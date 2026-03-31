@@ -1,17 +1,15 @@
-pipeline { 
-	agent any
-	stages {
-		stage('CleanUp de Workspace'){
-			steps {
-				cleanWs()
-			       }
-	 }
-	stage('CleanUp de Workspace'){
-			steps {
-				sh 'git clone https://github.com/mehdidov/depotdev26.git'
-			       }
-
-	}
-
-}
+pipeline {
+    agent any
+    stages {
+        stage('Nettoyage') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Clonage du Depot') {
+            steps {
+                sh 'git clone https://github.com/mehdidov/depotdev26.git'
+            }
+        }
+    }
 }
