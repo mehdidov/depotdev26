@@ -1,13 +1,13 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('CleanUp de Workspace') {
             steps {
                 cleanWs()
             }
         }
-        
+
         stage('Cloner le GitHub') {
             steps {
                 git branch: 'main', url: 'https://github.com/srcmed/depotOnline26.git'
@@ -32,15 +32,23 @@ pipeline {
         stage('build image docker') {
             steps {
                 script {
-                    // Utilisation du -f pour forcer la suppression même si l'image n'existe pas
                     sh 'sudo docker image rm -f "mynginx:latest"'
-                    
-                    // Build de l'image avec le tag latest
                     sh 'sudo docker build -t "mynginx:latest" .'
-                    
-                    // Vérification visuelle dans les logs
                     sh 'sudo docker image ls'
                 }
+            }
+        }
+
+        stage('Create conteneur nginx') {
+            steps {
+                // Nettoyage de l'ancien conteneur s'il existe
+                sh 'sudo docker rm -f contnginx01'
+                
+                // Lancement du nouveau conteneur
+                sh 'sudo docker run -d --name contnginx01 --hostname contnginx01 mynginx:latest'
+                
+                // Vérification du statut
+                sh 'sudo docker ps'
             }
         }
     }
