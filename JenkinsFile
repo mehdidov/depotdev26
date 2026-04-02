@@ -14,26 +14,27 @@ pipeline {
             }
         }
 
-        stage('Install Docker') {
+        stage('Fix & Start Docker') {
             steps {
-                sh 'sudo apt-get autoremove docker.io docker-compose -y'
-                sh 'sudo apt-get update'
-                sh 'sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y'
-                sh 'sudo apt-get install docker.io -y'
-                sh 'sudo apt-get update'
-                sh 'sudo chmod 666 /var/run/docker.sock'
-                sh 'sudo usermod -aG docker $USER'
-                sh 'sudo systemctl restart docker.service'
+                script {
+                    // On essaie de redémarrer proprement sans tout réinstaller
+                    // Le "|| true" permet de ne pas stopper le pipeline si une commande échoue
+                    sh 'sudo systemctl stop docker.socket || true'
+                    sh 'sudo systemctl stop docker.service || true'
+                    sh 'sudo apt-get install docker.io -y' // S'assure juste qu'il est là
+                    sh 'sudo systemctl start docker.service'
+                    sh 'sudo chmod 666 /var/run/docker.sock'
+                }
             }
         }
 
         stage('Build image Docker') {
             steps {
                 script {
-                    // Le || true évite que le build plante si le conteneur n'existe pas
-                    sh 'sudo docker rm -f "mynginx" || true'
-                    sh 'sudo docker build -t "mynginx" .'
-                    sh 'sudo docker image ls'
+                    // Utilisation de sudo pour être sûr que Docker a les droits
+                    sh 'sudo docker rm -f mynginx || true'
+                    sh 'sudo docker build -t mynginx .'
+                    sh 'sudo docker images'
                 }
             }
         }
