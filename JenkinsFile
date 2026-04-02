@@ -30,7 +30,7 @@ pipeline {
         stage('Build image Docker') {
             steps {
                 script {
-                    
+                    // Le || true évite que le build plante si le conteneur n'existe pas
                     sh 'sudo docker rm -f "mynginx" || true'
                     sh 'sudo docker build -t "mynginx" .'
                     sh 'sudo docker image ls'
@@ -38,5 +38,4 @@ pipeline {
             }
         }
     }
-}  
-      }
+}
