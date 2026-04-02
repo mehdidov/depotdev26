@@ -10,7 +10,6 @@ pipeline {
 
         stage('Cloner le GitHub') {
             steps {
-                // Attention : vérifie bien que l'URL finit par .git
                 git branch: 'main', url: 'https://github.com/mehdidov/depotdev26.git'
             }
         }
@@ -24,19 +23,17 @@ pipeline {
                 sh 'sudo apt-get update'
                 sh 'sudo chmod 666 /var/run/docker.sock'
                 sh 'sudo usermod -aG docker $USER'
-                // sh 'sudo systemctl stop docker.service'
-                // sh 'sudo systemctl start docker.service'
             }
         }
 
         stage('build image docker') {
-                           steps {
-                               script {
-                sh 'sudo docker image rm "mynginx:latest" || true'
-                sh 'sudo docker build -t "mynginx" .'
-                sh 'sudo docker image ls'
-                           }
+            steps {
+                script {
+                    sh 'sudo docker image rm "mynginx:latest" || true'
+                    sh 'sudo docker build -t "mynginx" .'
+                    sh 'sudo docker image ls'
                 }
-      }
-  }
-}
+            }
+        }
+    } // Fin de stages
+} // Fin de pipeline
